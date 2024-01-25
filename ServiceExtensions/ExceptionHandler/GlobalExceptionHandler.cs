@@ -9,15 +9,15 @@ using Serilog;
 using Utilities.Exceptions;
 using Utilities.Response;
 
-namespace ServiceExtensions.Middlewares;
+namespace ServiceExtensions.ExceptionHandler;
 
-public class GlobalExceptionHandlerMiddleware
+public class GlobalExceptionHandler
 {
     private readonly RequestDelegate _next;
 
     private readonly IWebHostEnvironment _env;
 
-    public GlobalExceptionHandlerMiddleware(RequestDelegate next,
+    public GlobalExceptionHandler(RequestDelegate next,
         IWebHostEnvironment env)
     {
         _next = next;
