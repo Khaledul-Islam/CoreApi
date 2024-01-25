@@ -86,6 +86,11 @@ namespace ServiceExtensions.ServiceCollection
                             .UseSqlServer(databaseSetting.ConnectionStrings.SqlServer);
                         break;
 
+                    case DatabaseProvider.MySql:
+                        options
+                            .UseMySQL(databaseSetting.ConnectionStrings.MySql);
+                        break;
+
                     default:
                         throw new Exception("Database provider not found.");
                 }

@@ -28,6 +28,12 @@ public class DatabaseSettingValidation : IValidateOptions<DatabaseSetting>
             return ValidateOptionsResult.Fail($"{nameof(DatabaseProvider)} set to {nameof(DatabaseProvider.SqlServer)} but {nameof(DatabaseProvider.SqlServer)} ConnectionString is empty.");
         }
 
+        if (options.DatabaseProvider == DatabaseProvider.MySql
+            && string.IsNullOrEmpty(options.ConnectionStrings.MySql))
+        {
+            return ValidateOptionsResult.Fail($"{nameof(DatabaseProvider)} set to {nameof(DatabaseProvider.MySql)} but {nameof(DatabaseProvider.MySql)} ConnectionString is empty.");
+        }
+
         return ValidateOptionsResult.Success;
     }
 }

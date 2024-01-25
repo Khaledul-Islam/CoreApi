@@ -10,7 +10,7 @@ public static class SwaggerRegistration
     {
         services.AddSwaggerGen(p =>
         {
-            p.SwaggerDoc("v1", new OpenApiInfo { Title = "NetUltimate", Version = "v1" });
+            p.SwaggerDoc("v1", new OpenApiInfo { Title = "CoreApi", Version = "v1" });
             p.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 In = ParameterLocation.Header,
@@ -39,7 +39,7 @@ public static class SwaggerRegistration
     public static IApplicationBuilder RegisterSwaggerMidlleware(this IApplicationBuilder app)
     {
         app.UseSwagger();
-        app.UseSwaggerUI(p => p.SwaggerEndpoint("/swagger/v1/swagger.json", "NetUltimate"));
+        app.UseSwaggerUI(p => p.SwaggerEndpoint("/swagger/v1/swagger.json", "CoreApi"));
         return app;
     }
 }
