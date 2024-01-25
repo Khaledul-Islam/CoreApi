@@ -39,7 +39,7 @@ namespace CoreApi.Controllers
             {
                 throw new DuplicateException("This user already exists.");
             }
-
+            
             var user = _mapper.Map<User>(userCreateDto);
             //password
             var hashPassword = _passwordHasher.HashPassword(user, userCreateDto.Password);
