@@ -22,7 +22,5 @@ public record CurrentUser
 
     public ICollection<string> Roles { get; init; } = null!;
 
-    public int TeamId { get; init; }
 
-    public int TenantId { get; init; }
 }

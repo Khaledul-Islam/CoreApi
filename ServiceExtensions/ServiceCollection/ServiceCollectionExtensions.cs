@@ -47,12 +47,6 @@ namespace ServiceExtensions.ServiceCollection
                     .ValidateDataAnnotations()
                     .ValidateOnStart();
 
-            services.AddSingleton<IValidateOptions<IdentitySetting>, IdentitySettingValidation>();
-            services.AddOptions<IdentitySetting>()
-                    .Bind(configuration.GetSection($"{nameof(ApplicationSettings)}:{nameof(IdentitySetting)}"))
-                    .ValidateDataAnnotations()
-                    .ValidateOnStart();
-
             services.AddSingleton<IValidateOptions<JwtSetting>, JwtSettingValidation>();
             services.AddOptions<JwtSetting>()
                     .Bind(configuration.GetSection($"{nameof(ApplicationSettings)}:{nameof(JwtSetting)}"))
