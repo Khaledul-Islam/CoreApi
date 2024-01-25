@@ -11,6 +11,7 @@ public class ApiResponse
 
     public string? Message { get; set; }
 
+
     public ApiResponse(bool isSuccess, ApiResultBodyCode apiResultBodyCode, string? message = null)
     {
         IsSuccess = isSuccess;

@@ -12,7 +12,7 @@ public static class EnumExtensions
         T result;
         try
         {
-            result = (T)System.Enum.Parse(typeof(T), enumString, true);
+            result = (T)Enum.Parse(typeof(T), enumString, true);
         }
         catch
         {
@@ -23,7 +23,7 @@ public static class EnumExtensions
     public static List<int> GetEnumIntValues<TEnum>(this TEnum enumValue)
     {
         var enumType = enumValue.GetType();
-        var enumValues = System.Enum.GetValues(enumType);
+        var enumValues = Enum.GetValues(enumType);
         var enumIntValues = enumValues.Cast<int>().ToList();
         return enumIntValues;
     }
@@ -104,10 +104,10 @@ public static class EnumExtensions
         MemberInfo[] memberInfo = genericEnumType.GetMember(genericEnum.ToString());
         if ((memberInfo.Length > 0))
         {
-            var attribs = memberInfo[0].GetCustomAttributes(typeof(System.ComponentModel.DescriptionAttribute), false);
+            var attribs = memberInfo[0].GetCustomAttributes(typeof(DescriptionAttribute), false);
             if ((attribs.Any()))
             {
-                return ((System.ComponentModel.DescriptionAttribute)attribs.ElementAt(0)).Description;
+                return ((DescriptionAttribute)attribs.ElementAt(0)).Description;
             }
         }
         return genericEnum.ToString();

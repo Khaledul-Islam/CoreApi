@@ -19,6 +19,8 @@ using Services.Users;
 using Utilities.Exceptions;
 using Models.Entities.Identity;
 using Services.Crypto;
+using Contracts.Files;
+using Services.Files;
 
 namespace ServiceExtensions.ServiceCollection
 {
@@ -199,14 +201,10 @@ namespace ServiceExtensions.ServiceCollection
             services.AddTransient<IUserService, UserService>();
             services.AddScoped<IPasswordHasherService<User>, PasswordHasherService<User>>();
 
-            if (applicationSettings.DatabaseSetting.StoreFilesOnDatabase)
-            {
-                //services.AddScoped(typeof(IFileService), typeof(FileOnDatabaseService));
-            }
-            else
-            {
-                //services.AddScoped(typeof(IFileService), typeof(FileOnFileSystemService));
-            }
+            services.AddScoped(typeof(IFileService),
+                applicationSettings.DatabaseSetting.StoreFilesOnDatabase
+                    ? typeof(FileOnDatabaseService)
+                    : typeof(FileOnFileSystemService));
         }
 
         private static void AddDataProvidersDependencyRegistration(IServiceCollection services)

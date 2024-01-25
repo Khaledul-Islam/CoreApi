@@ -1,15 +1,16 @@
 ﻿using System.Data.SqlClient;
 using System.Linq.Expressions;
+using Data.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data.Providers
 {
     public class Repository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntity : class
     {
-        private readonly DbContext _context;
+        private readonly ApplicationDbContext _context;
         private readonly DbSet<TEntity> _entity;
 
-        public Repository(DbContext context)
+        public Repository(ApplicationDbContext context)
         {
             _context = context;
             _entity = context.Set<TEntity>();
