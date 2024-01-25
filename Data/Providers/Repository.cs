@@ -5,16 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Data.Providers
 {
-    public class Repository<TEntity, TKey> : IRepository<TEntity, TKey> where TEntity : class
+    public class Repository<TEntity, TKey>(ApplicationDbContext context) : IRepository<TEntity, TKey>
+        where TEntity : class
     {
-        private readonly ApplicationDbContext _context;
-        private readonly DbSet<TEntity> _entity;
-
-        public Repository(ApplicationDbContext context)
-        {
-            _context = context;
-            _entity = context.Set<TEntity>();
-        }
+        private readonly DbSet<TEntity> _entity = context.Set<TEntity>();
 
 
         public async Task<TEntity?> GetByIdAsync(TKey id, CancellationToken cancellationToken)
@@ -91,7 +85,7 @@ namespace Data.Providers
         public Task<TAnotherEntity> UpdateMinimal<TAnotherEntity>(TAnotherEntity entity,
             params Expression<Func<TAnotherEntity, object>>[] propsToBeUpdated) where TAnotherEntity : class
         {
-            _context.Entry(entity).State = EntityState.Modified;
+            context.Entry(entity).State = EntityState.Modified;
             return Task.FromResult(entity);
         }
 
@@ -102,50 +96,50 @@ namespace Data.Providers
 
         public Task<TOEntity> RemoveOther<TOEntity>(TOEntity entity) where TOEntity : class
         {
-            _context.Set<TOEntity>().Remove(entity);
+            context.Set<TOEntity>().Remove(entity);
             return Task.FromResult(entity);
         }
         public Task<IEnumerable<TOEntity>> RemoveRangeOther<TOEntity>(IEnumerable<TOEntity> entities) where TOEntity : class
         {
-            _context.Set<TOEntity>().RemoveRange(entities);
+            context.Set<TOEntity>().RemoveRange(entities);
             return Task.FromResult(entities);
         }
 
         public Task AttachOtherEntity<TOEntity>(TOEntity otherEntity) where TOEntity : class
         {
-            _context.Set<TOEntity>().Attach(otherEntity);
+            context.Set<TOEntity>().Attach(otherEntity);
             return Task.CompletedTask;
         }
 
         public async Task ExecuteSqlRawAsync(string sql, CancellationToken cancellationToken, params object[] parameters)
         {
-            await _context.Database.ExecuteSqlRawAsync(sql, cancellationToken, parameters);
+            await context.Database.ExecuteSqlRawAsync(sql, cancellationToken, parameters);
         }
 
         public async Task ExecuteSqlRawAsync(string sql, CancellationToken cancellationToken)
         {
-            await _context.Database.ExecuteSqlRawAsync(sql,cancellationToken);
+            await context.Database.ExecuteSqlRawAsync(sql,cancellationToken);
         }
 
         public async Task<IEnumerable<TOther>> ExecuteSqlQueryAsync<TOther>(string sql, CancellationToken cancellationToken, params object[] parameters) where TOther : class
         {
-            return await _context.Set<TOther>().FromSqlRaw(sql, parameters).ToListAsync(cancellationToken);
+            return await context.Set<TOther>().FromSqlRaw(sql, parameters).ToListAsync(cancellationToken);
         }
 
         public async Task<IEnumerable<TOther>> ExecuteSqlQueryAsync<TOther>(string sql, SqlParameter[] parameters, CancellationToken cancellationToken) where TOther : class
         {
-            return await _context.Set<TOther>().FromSqlRaw(sql, parameters).ToListAsync(cancellationToken);
+            return await context.Set<TOther>().FromSqlRaw(sql, parameters).ToListAsync(cancellationToken);
         }
 
         public async Task<IEnumerable<TOther>> ExecuteProcedureAsync<TOther>(string procedureName, List<SqlParameter> parameters, CancellationToken cancellationToken) where TOther : class
         {
             var sql = $"EXEC {procedureName} {string.Join(", ", parameters.Select(p => $"@{p.ParameterName}"))}";
-            return await _context.Set<TOther>().FromSqlRaw(sql, parameters.ToArray()).ToListAsync(cancellationToken);
+            return await context.Set<TOther>().FromSqlRaw(sql, parameters.ToArray()).ToListAsync(cancellationToken);
         }
 
         public DbSet<TOther> GetEntity<TOther>() where TOther : class
         {
-            return _context.Set<TOther>();
+            return context.Set<TOther>();
         }
 
         public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[]? includeProperties)
@@ -180,12 +174,12 @@ namespace Data.Providers
 
         public void Dispose()
         {
-            _context.Dispose();
+            context.Dispose();
             GC.SuppressFinalize(this);
         }
         public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
         {
-            return await _context.SaveChangesAsync(cancellationToken);
+            return await context.SaveChangesAsync(cancellationToken);
         }
         public IQueryable<TEntity> ApplyIncludesOnQuery(IQueryable<TEntity> query, params Expression<Func<TEntity, object>>[]? includeProperties)
         {

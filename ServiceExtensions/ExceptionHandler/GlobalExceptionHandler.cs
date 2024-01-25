@@ -11,19 +11,9 @@ using Utilities.Response;
 
 namespace ServiceExtensions.ExceptionHandler;
 
-public class GlobalExceptionHandler
+public class GlobalExceptionHandler(RequestDelegate next,
+    IWebHostEnvironment env)
 {
-    private readonly RequestDelegate _next;
-
-    private readonly IWebHostEnvironment _env;
-
-    public GlobalExceptionHandler(RequestDelegate next,
-        IWebHostEnvironment env)
-    {
-        _next = next;
-        _env = env;
-    }
-
     public async Task Invoke(HttpContext context)
     {
         string? message = null;
@@ -36,7 +26,7 @@ public class GlobalExceptionHandler
 
         try
         {
-            await _next(context);
+            await next(context);
         }
 
         catch (BaseWebApiException exception)
@@ -47,7 +37,7 @@ public class GlobalExceptionHandler
             apiStatusCode = exception.ApiResultBodyCode;
 
             // Generate message
-            if (_env.IsDevelopment())
+            if (env.IsDevelopment())
             {
                 var dic = new Dictionary<string, string?>
                 {
@@ -86,7 +76,7 @@ public class GlobalExceptionHandler
         {
             Log.Error(exception, $"Middleware ---> Exception : {exception.Message}");
 
-            if (_env.IsDevelopment())
+            if (env.IsDevelopment())
             {
                 var dic = new Dictionary<string, string?>
                 {

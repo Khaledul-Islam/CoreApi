@@ -8,12 +8,8 @@ using Utilities.Exceptions;
 
 namespace Services.Files;
 
-public class FileOnDatabaseService : Repository<FileModel, int>,IFileService
+public class FileOnDatabaseService(ApplicationDbContext context) : Repository<FileModel, int>(context), IFileService
 {
-    public FileOnDatabaseService(ApplicationDbContext context) : base(context)
-    {
-    }
-
     public async Task<int> StoreFileAsync(IFormFile formFile, string description, CancellationToken cancellationToken)
     {
         if (formFile is null)

@@ -16,38 +16,27 @@ using Utilities.Response;
 
 namespace CoreApi.Controllers
 {
-    public class AuthorizationController : BaseController
+    public class AuthorizationController(IMapper mapper, IAuthTokenService tokenService,
+            ApplicationSettings applicationSettings, IUserService userService,
+            IPasswordHasherService<User> passwordHasher)
+        : BaseController
     {
-        private readonly IMapper _mapper;
-        private readonly IAuthTokenService _tokenService;
-        private readonly ApplicationSettings _applicationSettings;
-        private readonly IPasswordHasherService<User> _passwordHasher;
-        private readonly IUserService _userService;
-
-        public AuthorizationController(IMapper mapper, IAuthTokenService tokenService, ApplicationSettings applicationSettings, IUserService userService, IPasswordHasherService<User> passwordHasher)
-        {
-            _mapper = mapper;
-            _tokenService = tokenService;
-            _applicationSettings = applicationSettings;
-            _userService = userService;
-            _passwordHasher = passwordHasher;
-        }
         [HttpPost("Register"), AllowAnonymous]
         public async Task<ApiResponse<UserSignInDto>> Register(UserCreateDto userCreateDto, CancellationToken cancellationToken)
         {
-            if (await _userService.AnyAsync(a=>a.UserName== userCreateDto.Username,cancellationToken))
+            if (await userService.AnyAsync(a=>a.UserName== userCreateDto.Username,cancellationToken))
             {
                 throw new DuplicateException("This user already exists.");
             }
             
-            var user = _mapper.Map<User>(userCreateDto);
+            var user = mapper.Map<User>(userCreateDto);
             //password
-            var hashPassword = _passwordHasher.HashPassword(user, userCreateDto.Password);
+            var hashPassword = passwordHasher.HashPassword(user, userCreateDto.Password);
             user.Password = hashPassword;
             user.CreatedOn = DateTime.Now;
             // Create User
-            var result = await _userService.AddAsync(user, cancellationToken);
-            await _userService.SaveChangesAsync(cancellationToken);
+            var result = await userService.AddAsync(user, cancellationToken);
+            await userService.SaveChangesAsync(cancellationToken);
             //if (result.Succeeded is false)
             //{
             //    throw new Exception(result.Errors.FirstOrDefault()?.Description ?? "Can not register this user.");
@@ -59,7 +48,7 @@ namespace CoreApi.Controllers
             // Create token
             var token = CreateToken(claims);
 
-            var userDto = _mapper.Map<UserDto>(user);
+            var userDto = mapper.Map<UserDto>(user);
             var userSignInDto = new UserSignInDto
             {
                 UserDto = userDto,
@@ -70,8 +59,8 @@ namespace CoreApi.Controllers
             user.LastLoginDate = DateTime.UtcNow;
             user.RefreshToken = token.RefreshToken;
             user.RefreshTokenExpirationTime = token.RefreshTokenExpiresIn;
-            await _userService.Update(user);
-            await _userService.SaveChangesAsync(cancellationToken);
+            await userService.Update(user);
+            await userService.SaveChangesAsync(cancellationToken);
 
             return new ApiResponse<UserSignInDto>(true, ApiResultBodyCode.Success, userSignInDto);
         }
@@ -84,13 +73,13 @@ namespace CoreApi.Controllers
                 throw new BadRequestException("Grant type is not valid.");
             }
 
-            var user = await _userService.GetUserByUserName(tokenRequest.Username,cancellationToken);
+            var user = await userService.GetUserByUserName(tokenRequest.Username,cancellationToken);
             if (user is null)
             {
                 throw new NotFoundException("Username or Password is incorrect.");
             }
 
-            var verifyHashedPassword = _passwordHasher.VerifyHashedPassword(user, user.Password, tokenRequest.Password);
+            var verifyHashedPassword = passwordHasher.VerifyHashedPassword(user, user.Password, tokenRequest.Password);
 
             if (verifyHashedPassword == PasswordVerificationResult.Failed)
             {
@@ -108,7 +97,7 @@ namespace CoreApi.Controllers
             // Create token
             var token = CreateToken(claims);
 
-            var userDto = _mapper.Map<UserDto>(user);
+            var userDto = mapper.Map<UserDto>(user);
             var userSignInDto = new UserSignInDto
             {
                 UserDto = userDto,
@@ -119,8 +108,8 @@ namespace CoreApi.Controllers
             user.LastLoginDate = DateTime.UtcNow;
             user.RefreshToken = token.RefreshToken;
             user.RefreshTokenExpirationTime = token.RefreshTokenExpiresIn;
-            await _userService.Update(user);
-            await _userService.SaveChangesAsync(cancellationToken);
+            await userService.Update(user);
+            await userService.SaveChangesAsync(cancellationToken);
             return new ApiResponse<UserSignInDto>(true, ApiResultBodyCode.Success, userSignInDto);
         }
 
@@ -137,14 +126,14 @@ namespace CoreApi.Controllers
                 throw new BadRequestException("Invalid client request (AccessToken can not be empty).");
             }
 
-            var principal = _tokenService.GetPrincipalFromExpiredToken(tokenRequest.AccessToken);
+            var principal = tokenService.GetPrincipalFromExpiredToken(tokenRequest.AccessToken);
             var username = principal.Identity?.Name; //this is mapped to the Name claim by default
             if (username is null)
             {
                 throw new BadRequestException("Invalid client request.");
             }
 
-            var user = await _userService.GetUserByUserName(username,cancellationToken);
+            var user = await userService.GetUserByUserName(username,cancellationToken);
             if (user == null || user.RefreshToken != tokenRequest.RefreshToken)
             {
                 throw new BadRequestException("Invalid client request.");
@@ -161,8 +150,8 @@ namespace CoreApi.Controllers
             // Update User
             user.RefreshToken = token.RefreshToken;
             user.RefreshTokenExpirationTime = token.RefreshTokenExpiresIn;
-            await _userService.Update(user);
-            await _userService.SaveChangesAsync(cancellationToken);
+            await userService.Update(user);
+            await userService.SaveChangesAsync(cancellationToken);
 
             return new ApiResponse<Token>(true, ApiResultBodyCode.Success, token);
         }
@@ -171,9 +160,9 @@ namespace CoreApi.Controllers
         {
             return new Token
             {
-                AccessToken = _tokenService.GenerateAccessToken(claims),
-                RefreshToken = _tokenService.GenerateRefreshToken(),
-                RefreshTokenExpiresIn = DateTime.UtcNow.AddDays(_applicationSettings.JwtSetting.RefreshTokenExpirationDays),
+                AccessToken = tokenService.GenerateAccessToken(claims),
+                RefreshToken = tokenService.GenerateRefreshToken(),
+                RefreshTokenExpiresIn = DateTime.UtcNow.AddDays(applicationSettings.JwtSetting.RefreshTokenExpirationDays),
                 TokenType = "Bearer"
             };
         }

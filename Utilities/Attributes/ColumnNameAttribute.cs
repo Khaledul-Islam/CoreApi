@@ -1,12 +1,7 @@
 ﻿namespace Utilities.Attributes
 {
-    public class ColumnNameAttribute : Attribute
+    public class ColumnNameAttribute(string columnName) : Attribute
     {
-        public string ColumnName { get; }
-
-        public ColumnNameAttribute(string columnName)
-        {
-            ColumnName = columnName;
-        }
+        public string ColumnName { get; } = columnName;
     }
 }
