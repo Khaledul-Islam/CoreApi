@@ -1,13 +1,15 @@
 using Config.Settings;
 using FluentValidation.AspNetCore;
+using Serilog;
 using ServiceExtensions.ApplicationBuilder;
+using ServiceExtensions.Serilog;
 using ServiceExtensions.ServiceCollection;
 using ServiceExtensions.Swagger;
 using Utilities.Validations;
 
 
 var builder = WebApplication.CreateBuilder(args);
-//builder.Host.UseSerilog();
+builder.Host.UseSerilog();
 
 var services = builder.Services;
 
@@ -18,8 +20,8 @@ var applicationSettings = configuration
                           .Get<ApplicationSettings>();
 
 const string CORS_POLICY = "CorsPolicy";
-//todo
-//SerilogExtensions.Register(applicationSettings);
+
+SerilogExtensions.Register(applicationSettings);
 
 // Add services to the container.
 ConfigureServices(services);

@@ -8,6 +8,7 @@ public sealed record LogSetting
     public string TableName { get; init; } = "SysError";
 
     public bool AutoCreateSqlTable { get; init; } = true;
+    public bool AutoCreateDatabase { get; init; } = true;
 
     public LogLevelSerilog MinimumLevelSerilog { get; init; } = LogLevelSerilog.Error;
 }
