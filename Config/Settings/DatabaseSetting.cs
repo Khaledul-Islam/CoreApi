@@ -6,9 +6,6 @@ namespace Config.Settings;
 public sealed record DatabaseSetting
 {
     public ConnectionStrings ConnectionStrings { get; init; } = null!;
-
-    public bool StoreFilesOnDatabase { get; init; } = true;
-
     public DatabaseProvider DatabaseProvider { get; init; } = DatabaseProvider.Postgres;
 }
 

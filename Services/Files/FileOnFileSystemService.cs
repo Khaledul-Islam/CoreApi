@@ -1,4 +1,5 @@
-﻿using Contracts.Files;
+﻿using Config.Settings;
+using Contracts.Files;
 using Data.Context;
 using Data.Providers;
 using Microsoft.AspNetCore.Http;
@@ -8,7 +9,7 @@ using Utilities.Exceptions;
 
 namespace Services.Files;
 
-public class FileOnFileSystemService(ApplicationDbContext context) : Repository<FileModel, int>(context), IFileService
+public class FileOnFileSystemService(ApplicationDbContext context, ApplicationSettings applicationSettings) : Repository<FileModel, int>(context), IFileService
 {
     public async Task<int> StoreFileAsync(IFormFile formFile, string description, CancellationToken cancellationToken)
     {
@@ -17,7 +18,7 @@ public class FileOnFileSystemService(ApplicationDbContext context) : Repository<
             throw new BadRequestException("File is empty object");
         }
 
-        var basePath = Path.Combine("Resources");
+        var basePath = Path.Combine(applicationSettings.FileSetting.SystemFilePath);
         var basePathExists = Directory.Exists(basePath);
         if (basePathExists is false)
         {

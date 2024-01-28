@@ -64,6 +64,12 @@ namespace ServiceExtensions.ServiceCollection
                     .Bind(configuration.GetSection($"{nameof(ApplicationSettings)}:{nameof(MailSetting)}"))
                     .ValidateDataAnnotations()
                     .ValidateOnStart();
+            //file setting
+            services.AddSingleton<IValidateOptions<FileSetting>, FileSettingValidation>();
+            services.AddOptions<FileSetting>()
+                .Bind(configuration.GetSection($"{nameof(ApplicationSettings)}:{nameof(FileSetting)}"))
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
         }
 
         public static void AddDbContext(this IServiceCollection services, DatabaseSetting databaseSetting)
@@ -196,7 +202,7 @@ namespace ServiceExtensions.ServiceCollection
             services.AddScoped<IPasswordHasherService<User>, PasswordHasherService<User>>();
 
             services.AddScoped(typeof(IFileService),
-                applicationSettings.DatabaseSetting.StoreFilesOnDatabase
+                applicationSettings.FileSetting.StoreFilesOnDatabase
                     ? typeof(FileOnDatabaseService)
                     : typeof(FileOnFileSystemService));
         }

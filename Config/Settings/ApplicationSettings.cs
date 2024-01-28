@@ -11,6 +11,7 @@ public sealed record ApplicationSettings
     public LogSetting LogSetting { get; init; } = null!;
 
     public MailSetting MailSetting { get; init; } = null!;
+    public FileSetting FileSetting { get; init; } = null!;
 }
 
 public class ApplicationSettingsValidation : IValidateOptions<ApplicationSettings>
