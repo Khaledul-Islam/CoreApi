@@ -77,7 +77,11 @@ public class FileOnDatabaseService(ApplicationDbContext context) : Repository<Fi
     public async Task<FileStreamResult> GetFileByIdAsync(int id, CancellationToken cancellationToken)
     {
         var entity = await GetByIdAsync(id, cancellationToken);
-
+        if (entity == null || entity.Data == null)
+        {
+            var error = entity == null ? nameof(entity) : nameof(entity.Data);
+            throw new NullReferenceException($"{error} is null");
+        }
         // Create FileStreamResult
         var fileStreamResult = new FileStreamResult(new MemoryStream(entity.Data!), entity.FileType);
         fileStreamResult.FileDownloadName = entity.Name + entity.Extension;
@@ -88,6 +92,11 @@ public class FileOnDatabaseService(ApplicationDbContext context) : Repository<Fi
     public async Task DeleteFileAsync(int id, CancellationToken cancellationToken)
     {
         var entity = await GetByIdAsync(id,cancellationToken);
+        if (entity == null || entity.Data == null)
+        {
+            var error = entity == null ? nameof(entity) : nameof(entity.Data);
+            throw new NullReferenceException($"{error} is null");
+        }
         await Remove(entity);
     }
 }

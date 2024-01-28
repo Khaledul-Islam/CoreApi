@@ -105,7 +105,11 @@ public class FileOnFileSystemService(ApplicationDbContext context) : Repository<
     public async Task<FileStreamResult> GetFileByIdAsync(int id, CancellationToken cancellationToken)
     {
         var entity = await GetByIdAsync(id, cancellationToken);
-
+        if (entity ==null || entity.FilePath == null)
+        {
+            var error = entity == null ? nameof(entity) : nameof(entity.FilePath);
+            throw new  NullReferenceException($"{error} is null");
+        }
         var memory = new MemoryStream();
         await using (var stream = new FileStream(entity.FilePath!, FileMode.Open))
         {
@@ -123,7 +127,11 @@ public class FileOnFileSystemService(ApplicationDbContext context) : Repository<
     public async Task DeleteFileAsync(int id, CancellationToken cancellationToken)
     {
         var entity = await GetByIdAsync(id, cancellationToken);
-
+        if (entity == null || entity.FilePath == null)
+        {
+            var error = entity == null ? nameof(entity) : nameof(entity.FilePath);
+            throw new NullReferenceException($"{error} is null");
+        }
         if (File.Exists(entity.FilePath))
         {
             File.Delete(entity.FilePath);
