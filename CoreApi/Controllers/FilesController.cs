@@ -1,10 +1,12 @@
 ﻿using Contracts.Files;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.Enums;
 using Utilities.Response;
 
 namespace CoreApi.Controllers;
 
+[Authorize]
 public class FilesController(IFileService fileService) : BaseController
 {
     [HttpPost]

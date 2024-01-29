@@ -90,7 +90,7 @@ namespace ServiceExtensions.ServiceCollection
 
                     case DatabaseProvider.MySql:
                         options
-                            .UseMySQL(databaseSetting.ConnectionStrings.MySql);
+                            .UseMySQL(databaseSetting.ConnectionStrings.MySql!);
                         break;
 
                     default:
