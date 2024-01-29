@@ -1,13 +1,13 @@
 ﻿using Contracts.Files;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.Enums;
-using Serilog;
 using Utilities.Response;
 
 namespace CoreApi.Controllers;
 
-[Authorize]
+[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 public class FilesController(IFileService fileService) : BaseController
 {
     [HttpPost]
@@ -19,7 +19,6 @@ public class FilesController(IFileService fileService) : BaseController
     [HttpGet("{id:int:min(1)}")]
     public async Task<ActionResult> GetFileById(int id, CancellationToken cancellationToken)
     {
-        Log.Error("test from get file");
         var file = await fileService.GetFileByIdAsync(id, cancellationToken);
         return File(file.FileStream, file.ContentType, file.FileDownloadName);
     }
