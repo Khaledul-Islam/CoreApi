@@ -34,55 +34,56 @@ ConfigurePipeline(app);
 app.Run();
 
 
-void ConfigureServices(IServiceCollection services)
+void ConfigureServices(IServiceCollection serviceCollection)
 {
-    services.AddConfiguration(configuration);
+    serviceCollection.AddConfiguration(configuration);
 
     // Database services
-    services.AddDbContext(applicationSettings.DatabaseSetting);
+    serviceCollection.AddDbContext(applicationSettings!.DatabaseSetting);
 
-    services.AutoMapperRegistration();
+    serviceCollection.AutoMapperRegistration();
 
-    services.AddJwtAuthentication(applicationSettings.JwtSetting);
+    serviceCollection.AddJwtAuthentication(applicationSettings.JwtSetting);
 
-    services.AddApplicationDependencyRegistration(applicationSettings);
+    serviceCollection.AddApplicationDependencyRegistration(applicationSettings);
 
-    services.AddSwagger();
+    serviceCollection.AddSwagger();
 
-    services.AddHttpContextAccessor();
+    serviceCollection.AddHttpContextAccessor();
 
     // Add service and create Policy with options
-    services.AddCors(options =>
+    serviceCollection.AddCors(options =>
     {
         options.AddPolicy(name: CORS_POLICY,
-            builder => builder
+            corsPolicyBuilder => corsPolicyBuilder
                       .AllowAnyMethod()
                       .AllowAnyHeader()
-                      .SetIsOriginAllowed(origin => true)  // Allow any origin
+                      .SetIsOriginAllowed(_ => true)  // Allow any origin
                       .AllowCredentials());                // Allow credentials
     });
 
-    services.AddMvc();
-    services.AddControllers()
-            .AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<TokenRequestValidator>());
+    serviceCollection.AddMvc();
+    serviceCollection.AddControllers()
+            .AddFluentValidation(fv => fv
+                .RegisterValidatorsFromAssemblyContaining<TokenRequestValidator>());
 }
 
-void ConfigurePipeline(IApplicationBuilder app)
+void ConfigurePipeline(IApplicationBuilder applicationBuilder)
 {
-    app.UseGlobalExceptionHandler();
+    applicationBuilder.UseGlobalExceptionHandler();
 
-    app.UseRouting();
+    applicationBuilder.UseRouting();
 
     // Enable Cors
-    app.UseCors(CORS_POLICY);
+    applicationBuilder.UseCors(CORS_POLICY);
 
-    app.UseAuthentication();
-    app.UseAuthorization();
+    applicationBuilder.UseAuthentication();
+    applicationBuilder.UseAuthorization();
 
-    app.UseEndpoints(endpoints =>
+    applicationBuilder.UseEndpoints(endpoints =>
     {
         endpoints.MapControllers();
     });
 
-    app.RegisterSwaggerMidlleware();
+    applicationBuilder.RegisterSwaggerMidlleware();
 }
