@@ -7,6 +7,7 @@ using Newtonsoft.Json.Serialization;
 using Serilog;
 using System.Net;
 using Utilities.Exceptions;
+using Utilities.Extensions;
 using Utilities.Response;
 
 namespace ServiceExtensions.ExceptionHandler;
@@ -31,7 +32,12 @@ public class GlobalExceptionHandler(RequestDelegate next,
 
         catch (BaseWebApiException exception)
         {
-            Log.Error(exception, $"Middleware ---> AppException : {exception.Message}");
+            var ipAddress = NetworkExtensions.GetLocalIpAddress();
+            var macAddress = NetworkExtensions.GetMacAddress();
+
+            Log.ForContext("IpAddress", ipAddress)
+                .ForContext("MacAddress", macAddress)
+                .Error(exception, $"Middleware ---> AppException : {exception.Message}");
 
             httpStatusCode = exception.HttpStatusCode;
             apiStatusCode = exception.ApiResultBodyCode;
@@ -74,7 +80,12 @@ public class GlobalExceptionHandler(RequestDelegate next,
 
         catch (Exception exception)
         {
-            Log.Error(exception, $"Middleware ---> Exception : {exception.Message}");
+            var ipAddress = NetworkExtensions.GetLocalIpAddress();
+            var macAddress = NetworkExtensions.GetMacAddress();
+
+            Log.ForContext("IpAddress", ipAddress)
+                .ForContext("MacAddress", macAddress)
+                .Error(exception, $"Middleware ---> AppException : {exception.Message}");
 
             if (env.IsDevelopment())
             {

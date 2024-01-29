@@ -3,6 +3,8 @@ using Models.Enums;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
+using System.Collections.ObjectModel;
+using System.Data;
 using Utilities.Extensions;
 
 namespace ServiceExtensions.Serilog;
@@ -46,13 +48,20 @@ public static class SerilogExtensions
                                 connectionString: connectionString,
                                 tableName: logSetting.TableName.ToSnakeCase(),
                                 restrictedToMinimumLevel: (LogEventLevel)logSetting.MinimumLevelSerilog,
-                                needAutoCreateTable: logSetting.AutoCreateSqlTable
-                                )
+                                needAutoCreateTable: logSetting.AutoCreateSqlTable)
                     .CreateLogger();
     }
 
     private static void SqlServerRegistration(LogSetting logSetting, string connectionString)
     {
+        var columnOptions = new ColumnOptions
+        {
+            AdditionalColumns = new Collection<SqlColumn>
+            {
+                new() { ColumnName = "MacAddress", DataType = SqlDbType.NVarChar, DataLength = 100 },
+                new() { ColumnName = "IpAddress", DataType = SqlDbType.NVarChar, DataLength = 100 }
+            }
+        };
 
         var sqlServerSinkOptions = new MSSqlServerSinkOptions
         {
@@ -62,13 +71,14 @@ public static class SerilogExtensions
         };
 
         Log.Logger = new LoggerConfiguration()
-                    .WriteTo
-                    .MSSqlServer(
-                                connectionString: connectionString,
-                                sinkOptions: sqlServerSinkOptions,
-                                restrictedToMinimumLevel: (LogEventLevel)logSetting.MinimumLevelSerilog
-                                )
-                    .CreateLogger();
+            .WriteTo.MSSqlServer(
+                connectionString: connectionString,
+                sinkOptions: sqlServerSinkOptions,
+                columnOptions: columnOptions,
+                restrictedToMinimumLevel: (LogEventLevel)logSetting.MinimumLevelSerilog)
+            .CreateLogger();
+
+
     }
     private static void MySqlRegistration(LogSetting logSetting, string connectionString)
     {
@@ -76,8 +86,7 @@ public static class SerilogExtensions
             .WriteTo.MySQL(
                 connectionString: connectionString,
                 tableName: logSetting.TableName,
-                restrictedToMinimumLevel: (LogEventLevel)logSetting.MinimumLevelSerilog
-            )
+                restrictedToMinimumLevel: (LogEventLevel)logSetting.MinimumLevelSerilog)
             .CreateLogger();
     }
 
