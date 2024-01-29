@@ -1,5 +1,5 @@
-﻿using System.Net;
-using Models.Enums;
+﻿using Models.Enums;
+using System.Net;
 namespace Utilities.Exceptions;
 
 /// <summary>

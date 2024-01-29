@@ -29,7 +29,7 @@ public class FileOnDatabaseService(ApplicationDbContext context) : Repository<Fi
 
         using (var dataStream = new MemoryStream())
         {
-            await formFile.CopyToAsync(dataStream,cancellationToken);
+            await formFile.CopyToAsync(dataStream, cancellationToken);
             fileModel.Data = dataStream.ToArray();
         }
 
@@ -62,7 +62,7 @@ public class FileOnDatabaseService(ApplicationDbContext context) : Repository<Fi
 
             using (var dataStream = new MemoryStream())
             {
-                await formFile.CopyToAsync(dataStream,cancellationToken);
+                await formFile.CopyToAsync(dataStream, cancellationToken);
                 fileModel.Data = dataStream.ToArray();
             }
 
@@ -91,7 +91,7 @@ public class FileOnDatabaseService(ApplicationDbContext context) : Repository<Fi
 
     public async Task DeleteFileAsync(int id, CancellationToken cancellationToken)
     {
-        var entity = await GetByIdAsync(id,cancellationToken);
+        var entity = await GetByIdAsync(id, cancellationToken);
         if (entity == null || entity.Data == null)
         {
             var error = entity == null ? nameof(entity) : nameof(entity.Data);

@@ -1,11 +1,11 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 using Models.Enums;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Serilog;
+using System.Net;
 using Utilities.Exceptions;
 using Utilities.Response;
 

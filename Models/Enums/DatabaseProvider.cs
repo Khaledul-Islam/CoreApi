@@ -6,5 +6,5 @@ public enum DatabaseProvider : byte
 
     SqlServer = 2,
 
-    MySql =3,
+    MySql = 3,
 }

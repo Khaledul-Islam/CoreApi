@@ -1,6 +1,6 @@
-﻿using System.Globalization;
-using AutoMapper;
+﻿using AutoMapper;
 using Config.Settings;
+using Contracts.Crypto;
 using Contracts.Tokens;
 using Contracts.Users;
 using Microsoft.AspNetCore.Authorization;
@@ -9,8 +9,8 @@ using Models.Dtos.AuthToken;
 using Models.Dtos.User;
 using Models.Entities.Identity;
 using Models.Enums;
+using System.Globalization;
 using System.Security.Claims;
-using Contracts.Crypto;
 using Utilities.Exceptions;
 using Utilities.Response;
 
@@ -24,11 +24,11 @@ namespace CoreApi.Controllers
         [HttpPost("Register"), AllowAnonymous]
         public async Task<ApiResponse<UserSignInDto>> Register(UserCreateDto userCreateDto, CancellationToken cancellationToken)
         {
-            if (await userService.AnyAsync(a=>a.UserName== userCreateDto.Username,cancellationToken))
+            if (await userService.AnyAsync(a => a.UserName == userCreateDto.Username, cancellationToken))
             {
                 throw new DuplicateException("This user already exists.");
             }
-            
+
             var user = mapper.Map<User>(userCreateDto);
             //password
             var hashPassword = passwordHasher.HashPassword(user, userCreateDto.Password);
@@ -64,7 +64,7 @@ namespace CoreApi.Controllers
 
             return new ApiResponse<UserSignInDto>(true, ApiResultBodyCode.Success, userSignInDto);
         }
-       
+
         [HttpPost("Login"), AllowAnonymous]
         public async Task<ApiResponse<UserSignInDto>> Login(TokenRequest tokenRequest, CancellationToken cancellationToken)
         {
@@ -73,7 +73,7 @@ namespace CoreApi.Controllers
                 throw new BadRequestException("Grant type is not valid.");
             }
 
-            var user = await userService.GetUserByUserName(tokenRequest.Username,cancellationToken);
+            var user = await userService.GetUserByUserName(tokenRequest.Username, cancellationToken);
             if (user is null)
             {
                 throw new NotFoundException("Username or Password is incorrect.");
@@ -133,7 +133,7 @@ namespace CoreApi.Controllers
                 throw new BadRequestException("Invalid client request.");
             }
 
-            var user = await userService.GetUserByUserName(username,cancellationToken);
+            var user = await userService.GetUserByUserName(username, cancellationToken);
             if (user == null || user.RefreshToken != tokenRequest.RefreshToken)
             {
                 throw new BadRequestException("Invalid client request.");

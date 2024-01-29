@@ -1,6 +1,6 @@
-﻿using System.Data.SqlClient;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Data.SqlClient;
 using System.Linq.Expressions;
-using Microsoft.EntityFrameworkCore;
 
 namespace Data.Providers
 {
@@ -21,7 +21,7 @@ namespace Data.Providers
 
         Task Attach(TEntity entity);
 
-        Task<TEntity> Update(TEntity entity,params Expression<Func<TEntity, object>>[] propsToBeExcluded);
+        Task<TEntity> Update(TEntity entity, params Expression<Func<TEntity, object>>[] propsToBeExcluded);
         Task<IEnumerable<TEntity>> UpdateRange(IEnumerable<TEntity> entities);
         Task<TAnotherEntity> UpdateMinimal<TAnotherEntity>(TAnotherEntity entity,
             params Expression<Func<TAnotherEntity, object>>[] propsToBeUpdated) where TAnotherEntity : class;

@@ -1,5 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Models.Enums;
+﻿using Models.Enums;
+using System.ComponentModel.DataAnnotations;
 
 namespace Models.Entities.Identity;
 
@@ -32,6 +32,6 @@ public class User
 
     // public FileModel? ProfilePicture { get; set; }
 
-    public ICollection<UserRole>? UserRoles { get; set; } 
+    public ICollection<UserRole>? UserRoles { get; set; }
     //public ICollection<EmailsLog>? EmailsLogs { get; set; }
 }

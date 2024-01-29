@@ -5,6 +5,7 @@ using ServiceExtensions.ApplicationBuilder;
 using ServiceExtensions.Serilog;
 using ServiceExtensions.ServiceCollection;
 using ServiceExtensions.Swagger;
+using Services.SignalRHubs;
 using Utilities.Validations;
 
 
@@ -66,6 +67,12 @@ void ConfigureServices(IServiceCollection serviceCollection)
     serviceCollection.AddControllers()
             .AddFluentValidation(fv => fv
                 .RegisterValidatorsFromAssemblyContaining<TokenRequestValidator>());
+    //SignalR
+    services.AddSignalR(options =>
+    {
+        options.ClientTimeoutInterval = TimeSpan.FromMinutes(30);
+        options.KeepAliveInterval = TimeSpan.FromMinutes(15);
+    });
 }
 
 void ConfigurePipeline(IApplicationBuilder applicationBuilder)
@@ -80,9 +87,12 @@ void ConfigurePipeline(IApplicationBuilder applicationBuilder)
     applicationBuilder.UseAuthentication();
     applicationBuilder.UseAuthorization();
 
+
     applicationBuilder.UseEndpoints(endpoints =>
     {
         endpoints.MapControllers();
+        // ----- SignalR -----
+        endpoints.MapHub<NotificationHub>($"/hub{HubRoutes.Notification}");
     });
 
     applicationBuilder.RegisterSwaggerMidlleware();

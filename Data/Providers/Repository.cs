@@ -1,7 +1,7 @@
-﻿using System.Data.SqlClient;
-using System.Linq.Expressions;
-using Data.Context;
+﻿using Data.Context;
 using Microsoft.EntityFrameworkCore;
+using System.Data.SqlClient;
+using System.Linq.Expressions;
 
 namespace Data.Providers
 {
@@ -33,15 +33,15 @@ namespace Data.Providers
 
         public async Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
         {
-            return await _entity.FirstOrDefaultAsync(predicate,cancellationToken);
+            return await _entity.FirstOrDefaultAsync(predicate, cancellationToken);
         }
-        public async Task<TEntity?> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate,CancellationToken cancellationToken)
+        public async Task<TEntity?> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate, CancellationToken cancellationToken)
         {
             return await _entity.SingleOrDefaultAsync(predicate, cancellationToken);
         }
         public async Task<TEntity?> AddAsync(TEntity entity, CancellationToken cancellationToken)
         {
-            await _entity.AddAsync(entity,cancellationToken);
+            await _entity.AddAsync(entity, cancellationToken);
             return entity;
         }
 
@@ -49,7 +49,7 @@ namespace Data.Providers
             CancellationToken cancellationToken)
         {
             var addRangeAsync = entities as TEntity[] ?? entities.ToArray();
-            await _entity.AddRangeAsync(addRangeAsync,cancellationToken);
+            await _entity.AddRangeAsync(addRangeAsync, cancellationToken);
             return addRangeAsync;
         }
 
@@ -118,7 +118,7 @@ namespace Data.Providers
 
         public async Task ExecuteSqlRawAsync(string sql, CancellationToken cancellationToken)
         {
-            await context.Database.ExecuteSqlRawAsync(sql,cancellationToken);
+            await context.Database.ExecuteSqlRawAsync(sql, cancellationToken);
         }
 
         public async Task<IEnumerable<TOther>> ExecuteSqlQueryAsync<TOther>(string sql, CancellationToken cancellationToken, params object[] parameters) where TOther : class

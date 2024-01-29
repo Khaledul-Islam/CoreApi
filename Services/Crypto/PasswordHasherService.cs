@@ -1,9 +1,9 @@
 ﻿using Contracts.Crypto;
+using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.Extensions.Options;
+using Models.Crypto;
 using Models.Enums;
 using System.Security.Cryptography;
-using Models.Crypto;
-using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 
 namespace Services.Crypto
 {

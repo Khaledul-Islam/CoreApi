@@ -35,7 +35,7 @@ public class FileOnFileSystemService(ApplicationDbContext context, ApplicationSe
 
         await using (var stream = new FileStream(filePath, FileMode.Create))
         {
-            await formFile.CopyToAsync(stream,cancellationToken);
+            await formFile.CopyToAsync(stream, cancellationToken);
         }
 
         var fileModel = new FileModel()
@@ -106,15 +106,15 @@ public class FileOnFileSystemService(ApplicationDbContext context, ApplicationSe
     public async Task<FileStreamResult> GetFileByIdAsync(int id, CancellationToken cancellationToken)
     {
         var entity = await GetByIdAsync(id, cancellationToken);
-        if (entity ==null || entity.FilePath == null)
+        if (entity == null || entity.FilePath == null)
         {
             var error = entity == null ? nameof(entity) : nameof(entity.FilePath);
-            throw new  NullReferenceException($"{error} is null");
+            throw new NullReferenceException($"{error} is null");
         }
         var memory = new MemoryStream();
         await using (var stream = new FileStream(entity.FilePath!, FileMode.Open))
         {
-            await stream.CopyToAsync(memory,cancellationToken);
+            await stream.CopyToAsync(memory, cancellationToken);
         }
         memory.Position = 0;
 

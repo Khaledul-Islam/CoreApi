@@ -1,26 +1,29 @@
 ﻿using Config.Settings;
+using Contracts.Crypto;
+using Contracts.Files;
+using Contracts.SignalRHubs;
+using Contracts.Tokens;
+using Contracts.Users;
+using Data.Context;
+using Data.Providers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
+using Microsoft.IdentityModel.Tokens;
+using Models.Entities.Identity;
+using Models.Enums;
+using ServiceExtensions.Mapper;
+using Services.Crypto;
+using Services.Files;
+using Services.SignalRHubs;
+using Services.Tokens;
+using Services.Users;
 using System.Security.Claims;
 using System.Text;
-using Contracts.Crypto;
-using Models.Enums;
-using Data.Context;
-using Microsoft.EntityFrameworkCore;
-using ServiceExtensions.Mapper;
-using Data.Providers;
-using Contracts.Tokens;
-using Contracts.Users;
-using Services.Tokens;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
-using Services.Users;
 using Utilities.Exceptions;
-using Models.Entities.Identity;
-using Services.Crypto;
-using Contracts.Files;
-using Services.Files;
 
 namespace ServiceExtensions.ServiceCollection
 {
@@ -140,6 +143,20 @@ namespace ServiceExtensions.ServiceCollection
                 options.TokenValidationParameters = validationParameters;
                 options.Events = new JwtBearerEvents
                 {
+                    OnMessageReceived = context =>
+                    {
+                        if ((context.Request.Path.Value!.StartsWith("/signalRHub")
+                            //|| context.Request.Path.Value!.StartsWith("/newsHub")
+                            //|| context.Request.Path.Value!.StartsWith("/userHub")
+                            )
+                            && context.Request.Query.TryGetValue("token", out StringValues token)
+                           )
+                        {
+                            context.Token = token;
+                        }
+
+                        return Task.CompletedTask;
+                    },
                     OnAuthenticationFailed = context =>
                     {
                         if (context.Exception is not null)
@@ -166,7 +183,7 @@ namespace ServiceExtensions.ServiceCollection
                             context.Fail("This token has no user id claim.");
                         }
 
-                        var user = await userService.GetByIdAsync(Convert.ToInt32(userIdClaim.Value),CancellationToken.None);
+                        var user = await userService.GetByIdAsync(Convert.ToInt32(userIdClaim.Value), CancellationToken.None);
                         if (user is null)
                         {
                             context.Fail("User does not exist.");
@@ -200,7 +217,7 @@ namespace ServiceExtensions.ServiceCollection
             services.AddScoped(typeof(IAuthTokenService), typeof(AuthTokenService));
             services.AddTransient<IUserService, UserService>();
             services.AddScoped<IPasswordHasherService<User>, PasswordHasherService<User>>();
-
+            services.AddScoped<INotificationProvider, NotificationProvider>();
             services.AddScoped(typeof(IFileService),
                 applicationSettings.FileSetting.StoreFilesOnDatabase
                     ? typeof(FileOnDatabaseService)

@@ -1,6 +1,4 @@
-﻿using Models.Entities.Identity;
-
-namespace Models.Entities.Files;
+﻿namespace Models.Entities.Files;
 
 public class FileModel
 {

@@ -1,7 +1,7 @@
-﻿using System.Reflection;
-using AutoMapper;
+﻿using AutoMapper;
 using Config.Mapper.Authentication;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace ServiceExtensions.Mapper;
 
