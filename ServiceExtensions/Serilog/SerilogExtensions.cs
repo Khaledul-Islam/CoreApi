@@ -5,7 +5,12 @@ using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
 using System.Collections.ObjectModel;
 using System.Data;
+using Serilog.Sinks.MariaDB;
+using Serilog.Sinks.MariaDB.Extensions;
 using Utilities.Extensions;
+using System.Collections.Concurrent;
+using Serilog.Sinks.PostgreSQL;
+using ColumnOptions = Serilog.Sinks.MSSqlServer.ColumnOptions;
 
 namespace ServiceExtensions.Serilog;
 
@@ -42,10 +47,17 @@ public static class SerilogExtensions
 
     private static void PostgresRegistration(LogSetting logSetting, string connectionString)
     {
+        var options = new ConcurrentDictionary<string, ColumnWriterBase>()
+        {
+            //todo:if need postGre then RnD here
+            //["MacAddress"] = new MacAddressColumnWriter(),
+            //["IpAddress"] = new IpAddressColumnWriter()
+        };
         Log.Logger = new LoggerConfiguration()
                     .WriteTo
                     .PostgreSQL(
                                 connectionString: connectionString,
+                                columnOptions: options,//
                                 tableName: logSetting.TableName.ToSnakeCase(),
                                 restrictedToMinimumLevel: (LogEventLevel)logSetting.MinimumLevelSerilog,
                                 needAutoCreateTable: logSetting.AutoCreateSqlTable)
@@ -82,10 +94,20 @@ public static class SerilogExtensions
     }
     private static void MySqlRegistration(LogSetting logSetting, string connectionString)
     {
+        var columnOption = new MariaDBSinkOptions() // because MySql does not have sink
+        {
+            PropertiesToColumnsMapping =
+            {
+                ["ipAddress"] = "ipAddress",
+                ["macAddress"] = "macAddress"
+            }
+        };
         Log.Logger = new LoggerConfiguration()
-            .WriteTo.MySQL(
+            .WriteTo.MariaDB( // because MySql does not have sink
                 connectionString: connectionString,
+                options: columnOption,
                 tableName: logSetting.TableName,
+                autoCreateTable:logSetting.AutoCreateSqlTable,
                 restrictedToMinimumLevel: (LogEventLevel)logSetting.MinimumLevelSerilog)
             .CreateLogger();
     }
