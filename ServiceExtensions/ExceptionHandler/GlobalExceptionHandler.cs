@@ -33,7 +33,9 @@ public class GlobalExceptionHandler(RequestDelegate next,
         catch (BaseWebApiException exception)
         {
             var ipAddress = NetworkExtensions.GetLocalIpAddress();
+            ipAddress = string.IsNullOrEmpty(ipAddress) ? "No Ip Found" : ipAddress;
             var macAddress = NetworkExtensions.GetMacAddress();
+            macAddress = string.IsNullOrEmpty(macAddress) ? "No Mac Found" : macAddress;
 
             Log.ForContext("IpAddress", ipAddress)
                 .ForContext("MacAddress", macAddress)
@@ -81,7 +83,9 @@ public class GlobalExceptionHandler(RequestDelegate next,
         catch (Exception exception)
         {
             var ipAddress = NetworkExtensions.GetLocalIpAddress();
+            ipAddress = string.IsNullOrEmpty(ipAddress) ? "No Ip Found" : ipAddress;
             var macAddress = NetworkExtensions.GetMacAddress();
+            macAddress = string.IsNullOrEmpty(macAddress) ? "No Mac Found" : macAddress;
 
             Log.ForContext("IpAddress", ipAddress)
                 .ForContext("MacAddress", macAddress)
