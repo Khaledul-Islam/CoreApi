@@ -6,6 +6,7 @@ using Contracts.Tokens;
 using Contracts.Users;
 using Data.Context;
 using Data.Providers;
+using Google.Protobuf.WellKnownTypes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,9 +16,11 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 using Models.Entities.Identity;
 using Models.Enums;
+using Quartz;
 using ServiceExtensions.Mapper;
 using Services.Crypto;
 using Services.Files;
+using Services.Quartz.Scheduler;
 using Services.SignalRHubs;
 using Services.Tokens;
 using Services.Users;
@@ -34,39 +37,40 @@ namespace ServiceExtensions.ServiceCollection
             services.AddSingleton(configuration.GetSection(nameof(ApplicationSettings)).Get<ApplicationSettings>()!);
             services.AddSingleton<IValidateOptions<ApplicationSettings>, ApplicationSettingsValidation>();
             services.AddOptions<ApplicationSettings>()
-                    .Bind(configuration.GetSection(nameof(ApplicationSettings)))
-                    .ValidateDataAnnotations()
-                    .ValidateOnStart();
+                .Bind(configuration.GetSection(nameof(ApplicationSettings)))
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
 
             services.AddSingleton<IValidateOptions<DatabaseSetting>, DatabaseSettingValidation>();
             services.AddOptions<DatabaseSetting>()
-                    .Bind(configuration.GetSection($"{nameof(ApplicationSettings)}:{nameof(DatabaseSetting)}"))
-                    .ValidateDataAnnotations()
-                    .ValidateOnStart();
+                .Bind(configuration.GetSection($"{nameof(ApplicationSettings)}:{nameof(DatabaseSetting)}"))
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
 
             services.AddSingleton<IValidateOptions<ConnectionStrings>, ConnectionStringsValidation>();
             services.AddOptions<ConnectionStrings>()
-                    .Bind(configuration.GetSection($"{nameof(ApplicationSettings)}:{nameof(DatabaseSetting)}:{nameof(ConnectionStrings)}"))
-                    .ValidateDataAnnotations()
-                    .ValidateOnStart();
+                .Bind(configuration.GetSection(
+                    $"{nameof(ApplicationSettings)}:{nameof(DatabaseSetting)}:{nameof(ConnectionStrings)}"))
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
 
             services.AddSingleton<IValidateOptions<JwtSetting>, JwtSettingValidation>();
             services.AddOptions<JwtSetting>()
-                    .Bind(configuration.GetSection($"{nameof(ApplicationSettings)}:{nameof(JwtSetting)}"))
-                    .ValidateDataAnnotations()
-                    .ValidateOnStart();
+                .Bind(configuration.GetSection($"{nameof(ApplicationSettings)}:{nameof(JwtSetting)}"))
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
 
             services.AddSingleton<IValidateOptions<LogSetting>, LogSettingValidation>();
             services.AddOptions<LogSetting>()
-                    .Bind(configuration.GetSection($"{nameof(ApplicationSettings)}:{nameof(LogSetting)}"))
-                    .ValidateDataAnnotations()
-                    .ValidateOnStart();
+                .Bind(configuration.GetSection($"{nameof(ApplicationSettings)}:{nameof(LogSetting)}"))
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
 
             services.AddSingleton<IValidateOptions<MailSetting>, MailSettingValidation>();
             services.AddOptions<MailSetting>()
-                    .Bind(configuration.GetSection($"{nameof(ApplicationSettings)}:{nameof(MailSetting)}"))
-                    .ValidateDataAnnotations()
-                    .ValidateOnStart();
+                .Bind(configuration.GetSection($"{nameof(ApplicationSettings)}:{nameof(MailSetting)}"))
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
             //file setting
             services.AddSingleton<IValidateOptions<FileSetting>, FileSettingValidation>();
             services.AddOptions<FileSetting>()
@@ -106,6 +110,7 @@ namespace ServiceExtensions.ServiceCollection
         {
             services.InitializeAutoMapper();
         }
+
         public static void AddJwtAuthentication(this IServiceCollection services, JwtSetting jwtSettings)
         {
             services.AddAuthentication(options =>
@@ -146,8 +151,8 @@ namespace ServiceExtensions.ServiceCollection
                     OnMessageReceived = context =>
                     {
                         if ((context.Request.Path.Value!.StartsWith("/signalRHub")
-                            //|| context.Request.Path.Value!.StartsWith("/newsHub")
-                            //|| context.Request.Path.Value!.StartsWith("/userHub")
+                                //|| context.Request.Path.Value!.StartsWith("/newsHub")
+                                //|| context.Request.Path.Value!.StartsWith("/userHub")
                             )
                             && context.Request.Query.TryGetValue("token", out StringValues token)
                            )
@@ -183,7 +188,8 @@ namespace ServiceExtensions.ServiceCollection
                             context.Fail("This token has no user id claim.");
                         }
 
-                        var user = await userService.GetByIdAsync(Convert.ToInt32(userIdClaim.Value), CancellationToken.None);
+                        var user = await userService.GetByIdAsync(Convert.ToInt32(userIdClaim.Value),
+                            CancellationToken.None);
                         if (user is null)
                         {
                             context.Fail("User does not exist.");
@@ -208,7 +214,8 @@ namespace ServiceExtensions.ServiceCollection
             });
         }
 
-        public static void AddApplicationDependencyRegistration(this IServiceCollection services, ApplicationSettings applicationSettings)
+        public static void AddApplicationDependencyRegistration(this IServiceCollection services,
+            ApplicationSettings applicationSettings)
         {
             // Data Services
             AddDataProvidersDependencyRegistration(services);
@@ -229,5 +236,24 @@ namespace ServiceExtensions.ServiceCollection
             services.AddScoped(typeof(IRepository<,>), typeof(Repository<,>));
         }
 
+        public static void AddSignalRRegistration(this IServiceCollection services)
+        {
+            services.AddSignalR(options =>
+            {
+                options.ClientTimeoutInterval = TimeSpan.FromMinutes(30);
+                options.KeepAliveInterval = TimeSpan.FromMinutes(15);
+            });
+        }
+
+        public static void AddQuartzRegistration(this IServiceCollection services, DatabaseSetting databaseSetting)
+        {
+            services.AddQuartz(q =>
+            {
+                q.SchedulerId = "Scheduler-Core";
+                });
+            services.AddTransient<JobScheduleService>();
+            services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
+            services.AddSingleton(provider => provider.GetRequiredService<ISchedulerFactory>().GetScheduler().Result);
+        }
     }
 }

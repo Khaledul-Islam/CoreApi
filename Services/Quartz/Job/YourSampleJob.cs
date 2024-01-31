@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using System.Diagnostics;
+using Microsoft.Extensions.Logging;
 using Quartz;
 
 namespace Services.Quartz.Job
@@ -14,8 +15,8 @@ namespace Services.Quartz.Job
 
         public Task Execute(IJobExecutionContext context)
         {
-            _logger.LogInformation("Executing sample job...");
-
+            _logger.LogError("Executing sample job...");
+            Debug.WriteLine("Executing sample job...");
             // Your job logic here
 
             return Task.CompletedTask;

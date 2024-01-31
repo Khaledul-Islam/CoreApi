@@ -7,8 +7,8 @@ namespace Services.Quartz.Scheduler
 {
     public class JobScheduleService
     {
-        public async Task ScheduleCronJob<T>(JobScheduleData jobAndScheduleInfo, ILogger logger)
-            where T : IJob
+        public async Task ScheduleCronJob<T,TL>(JobScheduleData jobAndScheduleInfo, ILogger<TL> logger)
+            where T : IJob where TL : class
         {
             var jobBuilder = JobBuilder.Create<T>()
                 .WithIdentity(jobAndScheduleInfo.JobName, jobAndScheduleInfo.JobGroup)
@@ -64,7 +64,8 @@ namespace Services.Quartz.Scheduler
             }
         }
 
-        public async Task RescheduleJob(JobScheduleData jobAndScheduleInfo, ILogger logger)
+        public async Task RescheduleJob<TL>(JobScheduleData jobAndScheduleInfo, ILogger<TL> logger)
+        where TL : class
         {
             var existingTriggerKey = new TriggerKey($"{jobAndScheduleInfo.JobName}-T", jobAndScheduleInfo.JobGroup);
             var existingTrigger = await jobAndScheduleInfo.Scheduler.GetTrigger(existingTriggerKey);
@@ -82,8 +83,8 @@ namespace Services.Quartz.Scheduler
             }
         }
 
-        public async Task ExecuteJobNow<T>(JobScheduleData jobAndScheduleInfo, ILogger logger)
-            where T : IJob
+        public async Task ExecuteJobNow<T,TL>(JobScheduleData jobAndScheduleInfo, ILogger<TL> logger)
+            where T : IJob where TL : class
         {
             logger.LogDebug("Execute Job Now {0}", jobAndScheduleInfo.JobName);
             var jobKey = new JobKey(jobAndScheduleInfo.JobName, jobAndScheduleInfo.JobGroup);
@@ -107,7 +108,7 @@ namespace Services.Quartz.Scheduler
             {
                 logger.LogDebug("Job Not Exists {0}", jobAndScheduleInfo.JobName);
                 if (jobAndScheduleInfo.IsActive)
-                    await ScheduleCronJob<T>(jobAndScheduleInfo, logger);
+                    await ScheduleCronJob<T,TL>(jobAndScheduleInfo, logger);
                 else
                 {
                     var job = JobBuilder.Create<T>()
@@ -123,7 +124,8 @@ namespace Services.Quartz.Scheduler
             }
         }
 
-        public async Task Remove(IScheduler scheduler, string jobName, ILogger logger, string? triggerName = null)
+        public async Task Remove<TL>(IScheduler scheduler, string jobName, ILogger<TL> logger, string? triggerName = null)
+        where TL: class
         {
             logger.LogDebug("UnScheduling job-trigger (as a part of remove job): {0}", triggerName);
             var allTriggerKeys = await scheduler.GetTriggerKeys(GroupMatcher<TriggerKey>.AnyGroup());
@@ -154,19 +156,22 @@ namespace Services.Quartz.Scheduler
             logger.LogError("Remove job failed. Could not find job with name: {0}", jobName);
         }
 
-        public async Task UnScheduleJob(JobScheduleData jobAndScheduleInfo, ILogger logger)
+        public async Task UnScheduleJob<TL>(JobScheduleData jobAndScheduleInfo, ILogger<TL> logger)
+            where TL : class
         {
             var triggerKey = new TriggerKey($"{jobAndScheduleInfo.JobName}-T", jobAndScheduleInfo.JobGroup);
             await jobAndScheduleInfo.Scheduler.UnscheduleJob(triggerKey);
         }
 
-        public async Task PauseTrigger(JobScheduleData jobAndScheduleInfo, ILogger logger)
+        public async Task PauseTrigger<TL>(JobScheduleData jobAndScheduleInfo, ILogger<TL> logger)
+            where TL : class
         {
             var triggerKey = new TriggerKey($"{jobAndScheduleInfo.JobName}-T", jobAndScheduleInfo.JobGroup);
             await jobAndScheduleInfo.Scheduler.PauseTrigger(triggerKey);
         }
 
-        public async Task ResumeTrigger(JobScheduleData jobAndScheduleInfo, ILogger logger)
+        public async Task ResumeTrigger<TL>(JobScheduleData jobAndScheduleInfo, ILogger<TL> logger)
+            where TL : class
         {
             logger.LogDebug("Resume Trigger {0}", jobAndScheduleInfo.JobName);
             var triggerKey = new TriggerKey($"{jobAndScheduleInfo.JobName}-T", jobAndScheduleInfo.JobGroup);
