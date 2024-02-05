@@ -1,11 +1,12 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Contracts.Quartz;
+using Microsoft.Extensions.Logging;
 using Models.Scheduler;
 using Quartz.Impl.Matchers;
 using Quartz;
 
 namespace Services.Quartz.Scheduler
 {
-    public class JobScheduleService
+    public class JobScheduleService:IJobScheduleService
     {
         public async Task ScheduleCronJob<T,TL>(JobScheduleData jobAndScheduleInfo, ILogger<TL> logger)
             where T : IJob where TL : class

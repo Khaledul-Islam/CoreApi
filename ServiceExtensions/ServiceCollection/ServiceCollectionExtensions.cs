@@ -6,7 +6,6 @@ using Contracts.Tokens;
 using Contracts.Users;
 using Data.Context;
 using Data.Providers;
-using Google.Protobuf.WellKnownTypes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -26,7 +25,11 @@ using Services.Tokens;
 using Services.Users;
 using System.Security.Claims;
 using System.Text;
+using Contracts.Example;
+using Contracts.Quartz;
 using Utilities.Exceptions;
+using Services.Example;
+using BusinessLogic.ExampleLogic;
 
 namespace ServiceExtensions.ServiceCollection
 {
@@ -229,6 +232,10 @@ namespace ServiceExtensions.ServiceCollection
                 applicationSettings.FileSetting.StoreFilesOnDatabase
                     ? typeof(FileOnDatabaseService)
                     : typeof(FileOnFileSystemService));
+
+            //Example Service Registration
+            services.AddTransient<IExampleLogic, ExampleLogic>();
+            services.AddTransient<IExampleService, ExampleService>();
         }
 
         private static void AddDataProvidersDependencyRegistration(IServiceCollection services)
@@ -251,7 +258,7 @@ namespace ServiceExtensions.ServiceCollection
             {
                 q.SchedulerId = "Scheduler-Core";
                 });
-            services.AddTransient<JobScheduleService>();
+            services.AddTransient<IJobScheduleService,JobScheduleService>();
             services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
             services.AddSingleton(provider => provider.GetRequiredService<ISchedulerFactory>().GetScheduler().Result);
         }

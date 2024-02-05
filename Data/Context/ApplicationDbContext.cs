@@ -1,4 +1,5 @@
 ﻿using Config.EntityConfiguration;
+using Config.EntityConfiguration.ExampleConfig;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data.Context
@@ -15,6 +16,7 @@ namespace Data.Context
             modelBuilder.ApplyConfiguration(new RoleConfiguration());
             modelBuilder.ApplyConfiguration(new UserRoleConfiguration());
             modelBuilder.ApplyConfiguration(new FileModelConfiguration());
+            modelBuilder.ApplyConfiguration(new ExampleConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

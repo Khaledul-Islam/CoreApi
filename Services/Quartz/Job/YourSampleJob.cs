@@ -4,18 +4,11 @@ using Quartz;
 
 namespace Services.Quartz.Job
 {
-    public class YourSampleJob : IJob
+    public class YourSampleJob(ILogger<YourSampleJob> logger) : IJob
     {
-        private readonly ILogger<YourSampleJob> _logger;
-
-        public YourSampleJob(ILogger<YourSampleJob> logger)
-        {
-            _logger = logger;
-        }
-
         public Task Execute(IJobExecutionContext context)
         {
-            _logger.LogError("Executing sample job...");
+            logger.LogError("Executing sample job...");
             Debug.WriteLine("Executing sample job...");
             // Your job logic here
 

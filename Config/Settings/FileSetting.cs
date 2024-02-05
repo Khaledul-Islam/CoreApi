@@ -1,15 +1,14 @@
-﻿using Config.Settings;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 
-namespace Config.Settings
+namespace Config.Settings;
+
+public sealed record FileSetting
 {
-    public sealed record FileSetting
-    {
-        public bool StoreFilesOnDatabase { get; init; } = true;
-        public string SystemFilePath { get; init; } = "Resources";
+    public bool StoreFilesOnDatabase { get; init; } = true;
+    public string SystemFilePath { get; init; } = "Resources";
 
-    }
 }
+
 public class FileSettingValidation : IValidateOptions<FileSetting>
 {
     public ValidateOptionsResult Validate(string? name, FileSetting options)
@@ -23,4 +22,3 @@ public class FileSettingValidation : IValidateOptions<FileSetting>
         return ValidateOptionsResult.Success;
     }
 }
-

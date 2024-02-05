@@ -1,15 +1,10 @@
 using Config.Settings;
 using FluentValidation.AspNetCore;
-using Microsoft.Extensions.Hosting;
-using Models.Scheduler;
-using Quartz;
 using Serilog;
 using ServiceExtensions.ApplicationBuilder;
 using ServiceExtensions.Serilog;
 using ServiceExtensions.ServiceCollection;
 using ServiceExtensions.Swagger;
-using Services.Quartz.Job;
-using Services.Quartz.Scheduler;
 using Services.SignalRHubs;
 using Utilities.Validations;
 
@@ -33,23 +28,6 @@ SerilogExtensions.Register(applicationSettings);
 ConfigureServices(services);
 
 var app = builder.Build();
-
-//
-
-// Get the IScheduler from the services
-var scheduler = app.Services.GetRequiredService<IScheduler>();
-var jobAndScheduleInfo = new JobScheduleData
-{
-    JobName = "SampleJob",
-    JobGroup = "SampleGroup",
-    CronExpression = "0/5 * * * * ?", // Every 30 seconds
-    Scheduler = scheduler
-};
-var jobScheduleService = app.Services.GetRequiredService<JobScheduleService>();
-var logger = app.Services.GetRequiredService<ILogger<JobScheduleService>>();
-await jobScheduleService.ScheduleCronJob<YourSampleJob, JobScheduleService>(jobAndScheduleInfo, logger);
-
-//
 
 // Configure the HTTP request pipeline.
 ConfigurePipeline(app);

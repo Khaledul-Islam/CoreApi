@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using Models.Dtos.Example;
 using Models.Dtos.Role;
 using Models.Dtos.User;
+using Models.Entities.ExampleEntity;
 using Models.Entities.Identity;
 
 namespace Config.Mapper.Authentication;
@@ -9,6 +11,11 @@ public class AuthenticationProfiles : Profile
 {
     public AuthenticationProfiles()
     {
+        //Example Mapping
+        CreateMap<ExampleDto, Example>()
+            .ForMember(dest => dest.CreatedDate, src => src.Ignore());
+        CreateMap<Example, ExampleDto>();
+
         // User mappings
         CreateMap<UserCreateDto, User>()
             .ForMember(dest => dest.Id, src => src.Ignore())
@@ -29,5 +36,7 @@ public class AuthenticationProfiles : Profile
             .ForMember(dest => dest.Id, src => src.Ignore());
         CreateMap<Role, RoleDto>();
         CreateMap<Role, RoleListDto>();
+
+
     }
 }
