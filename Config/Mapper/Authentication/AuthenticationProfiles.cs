@@ -2,7 +2,7 @@
 using Models.Dtos.Example;
 using Models.Dtos.Role;
 using Models.Dtos.User;
-using Models.Entities.ExampleEntity;
+using Models.Entities.Example;
 using Models.Entities.Identity;
 
 namespace Config.Mapper.Authentication;
@@ -12,9 +12,9 @@ public class AuthenticationProfiles : Profile
     public AuthenticationProfiles()
     {
         //Example Mapping
-        CreateMap<ExampleDto, Example>()
+        CreateMap<TestDto, Test>()
             .ForMember(dest => dest.CreatedDate, src => src.Ignore());
-        CreateMap<Example, ExampleDto>();
+        CreateMap<Test, TestDto>();
 
         // User mappings
         CreateMap<UserCreateDto, User>()

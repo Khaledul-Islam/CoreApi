@@ -22,10 +22,14 @@ public static class EnumExtensions
     }
     public static List<int> GetEnumIntValues<TEnum>(this TEnum enumValue)
     {
-        var enumType = enumValue.GetType();
-        var enumValues = Enum.GetValues(enumType);
-        var enumIntValues = enumValues.Cast<int>().ToList();
-        return enumIntValues;
+        var enumType = enumValue?.GetType();
+        if (enumType != null)
+        {
+            var enumValues = Enum.GetValues(enumType);
+            var enumIntValues = enumValues.Cast<int>().ToList();
+            return enumIntValues;
+        }
+        return new List<int>();
     }
     public static T ParseWithDescriptions<T>(string stringToParse)
             where T : struct, IConvertible
@@ -73,7 +77,7 @@ public static class EnumExtensions
         return typeof(T).GetMembers().Where(m => m.DeclaringType == typeof(T) && m.Name != "value__").Select(t => StringToEnum<T>(t.Name)).ToList();
     }
 
-    public static List<string> GetEnumNames<T>()
+    public static List<string?> GetEnumNames<T>()
         where T : struct, IConvertible
     {
         if (!typeof(T).IsEnum) { throw new ArgumentException("Invalid Enumeration Type"); }
@@ -91,7 +95,7 @@ public static class EnumExtensions
         return (T)Enum.Parse(typeof(T), name);
     }
 
-    public static string ToEnumString<T>(this T value)
+    public static string? ToEnumString<T>(this T value)
         where T : struct, IConvertible
     {
         var description = value.ToDescription();
@@ -125,7 +129,7 @@ public static class EnumExtensions
     }
     public static string GetStringFromFlags(this Enum input)
     {
-        List<string> descriptions = new List<string>();
+        List<string> descriptions = new();
         foreach (Enum value in Enum.GetValues(input.GetType()))
         {
             if (input.HasFlag(value) &&

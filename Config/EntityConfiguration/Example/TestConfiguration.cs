@@ -1,14 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Models.Entities.ExampleEntity;
+using Models.Entities.Example;
 
-namespace Config.EntityConfiguration.ExampleConfig
+namespace Config.EntityConfiguration.Example
 {
-    public class ExampleConfiguration : IEntityTypeConfiguration<Example>
+    public class TestConfiguration : IEntityTypeConfiguration<Test>
     {
-        public void Configure(EntityTypeBuilder<Example> builder)
+        public void Configure(EntityTypeBuilder<Test> builder)
         {
-            builder.ToTable(nameof(Example));
+            builder.ToTable(nameof(Test));
             builder.HasKey(e=>e.Id);
             builder.Property(e => e.Name).IsRequired().HasMaxLength(100);
             builder.Property(e => e.Extra1).IsRequired().HasMaxLength(100);

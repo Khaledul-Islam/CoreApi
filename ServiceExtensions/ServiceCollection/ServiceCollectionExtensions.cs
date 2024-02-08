@@ -25,11 +25,11 @@ using Services.Tokens;
 using Services.Users;
 using System.Security.Claims;
 using System.Text;
+using BusinessLogic.Example;
 using Contracts.Example;
 using Contracts.Quartz;
 using Utilities.Exceptions;
 using Services.Example;
-using BusinessLogic.ExampleLogic;
 
 namespace ServiceExtensions.ServiceCollection
 {
@@ -234,8 +234,8 @@ namespace ServiceExtensions.ServiceCollection
                     : typeof(FileOnFileSystemService));
 
             //Example Service Registration
-            services.AddTransient<IExampleLogic, ExampleLogic>();
-            services.AddTransient<IExampleService, ExampleService>();
+            services.AddTransient<ITestLogic, TestLogic>();
+            services.AddTransient<ITestService, TestService>();
         }
 
         private static void AddDataProvidersDependencyRegistration(IServiceCollection services)

@@ -166,25 +166,25 @@ namespace CoreApi.Controllers
                 TokenType = "Bearer"
             };
         }
-        private async Task<IEnumerable<Claim>> CreateClaimsAsync(User user, CancellationToken cancellationToken)
+        private Task<IEnumerable<Claim>> CreateClaimsAsync(User user, CancellationToken cancellationToken)
         {
             var roles = new List<string?>();
             // Add custom claims
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Name, user.UserName),
-                new Claim(nameof(CurrentUser.Id), user.Id.ToString()),
-                new Claim(nameof(CurrentUser.Username), user.UserName),
-                new Claim(nameof(CurrentUser.Firstname), user.Firstname),
-                new Claim(nameof(CurrentUser.Lastname), user.Lastname),
-                new Claim(nameof(CurrentUser.Email), user.Email),
-                new Claim(nameof(CurrentUser.Birthdate), user.Birthdate.ToString(CultureInfo.CurrentCulture)),
-                new Claim(nameof(CurrentUser.Gender), user.Gender.ToString()),
-                new Claim(nameof(CurrentUser.Roles), string.Join(",", roles))
+                new(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new(ClaimTypes.Name, user.UserName),
+                new(nameof(CurrentUser.Id), user.Id.ToString()),
+                new(nameof(CurrentUser.Username), user.UserName),
+                new(nameof(CurrentUser.Firstname), user.Firstname),
+                new(nameof(CurrentUser.Lastname), user.Lastname),
+                new(nameof(CurrentUser.Email), user.Email),
+                new(nameof(CurrentUser.Birthdate), user.Birthdate.ToString(CultureInfo.CurrentCulture)),
+                new(nameof(CurrentUser.Gender), user.Gender.ToString()),
+                new(nameof(CurrentUser.Roles), string.Join(",", roles))
             };
 
-            return claims;
+            return Task.FromResult<IEnumerable<Claim>>(claims);
         }
 
 

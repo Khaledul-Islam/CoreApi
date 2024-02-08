@@ -142,7 +142,7 @@ namespace Data.Providers
             return context.Set<TOther>();
         }
 
-        public async Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[]? includeProperties)
+        public Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate, params Expression<Func<TEntity, object>>[]? includeProperties)
         {
             var query = _entity.AsQueryable();
 
@@ -156,10 +156,10 @@ namespace Data.Providers
                 query = ApplyIncludesOnQuery(query, includeProperties);
             }
 
-            return query;
+            return Task.FromResult<IEnumerable<TEntity>>(query);
         }
 
-        public async Task<IEnumerable<TEntity>> FindInChunk<TSortedBy>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TSortedBy>> orderBy, int chunkSize = 500, params Expression<Func<TEntity, object>>[]? includeProperties)
+        public Task<IEnumerable<TEntity>> FindInChunk<TSortedBy>(Expression<Func<TEntity, bool>> predicate, Expression<Func<TEntity, TSortedBy>> orderBy, int chunkSize = 500, params Expression<Func<TEntity, object>>[]? includeProperties)
         {
             var query = _entity.Where(predicate);
 
@@ -169,7 +169,7 @@ namespace Data.Providers
             }
             query = query.OrderBy(orderBy);
 
-            return ChunkDataInternal(query, chunkSize).SelectMany(_ => _);
+            return Task.FromResult(ChunkDataInternal(query, chunkSize).SelectMany(e => e));
         }
 
         public void Dispose()

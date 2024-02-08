@@ -17,7 +17,7 @@ namespace Utilities.Extensions
             }
         }
 
-        public static readonly Dictionary<CronFrequency, string> CronMappings = new Dictionary<CronFrequency, string>
+        public static readonly Dictionary<CronFrequency, string> CronMappings = new()
         {
             { CronFrequency.Unknown, "Unsupported cron expression" },
             { CronFrequency.EveryMinute, "0 * * ? * *" },

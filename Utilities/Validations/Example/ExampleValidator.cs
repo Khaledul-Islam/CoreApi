@@ -3,7 +3,7 @@ using Models.Dtos.Example;
 
 namespace Utilities.Validations.Example
 {
-    public class ExampleValidator : BaseValidator<ExampleDto>
+    public class ExampleValidator : BaseValidator<TestDto>
     {
         public ExampleValidator()
         {

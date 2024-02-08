@@ -1,4 +1,4 @@
-﻿using BusinessLogic.ExampleLogic;
+﻿using BusinessLogic.Example;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,29 +9,29 @@ using Utilities.Response;
 namespace CoreApi.Controllers.Example
 {
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    public class ExampleController(IExampleLogic exampleLogic) : BaseController
+    public class TestController(ITestLogic exampleLogic) : BaseController
     {
         [HttpGet("{id:int:min(1)}")]
-        public async Task<ApiResponse<ExampleDto>> GetFileById(int id, CancellationToken cancellationToken)
+        public async Task<ApiResponse<TestDto>> GetFileById(int id, CancellationToken cancellationToken)
         {
             var model = await exampleLogic.GetById(id, cancellationToken);
             if (model == null!)
             {
-                return new ApiResponse<ExampleDto>(false, ApiResultBodyCode.NotFound, model!);
+                return new ApiResponse<TestDto>(false, ApiResultBodyCode.NotFound, model!);
             }
-            return new ApiResponse<ExampleDto>(true, ApiResultBodyCode.Success, model);
+            return new ApiResponse<TestDto>(true, ApiResultBodyCode.Success, model);
         }
 
         [HttpGet]
-        public async Task<ApiResponse<IEnumerable<ExampleDto>>> GetAll(CancellationToken cancellationToken)
+        public async Task<ApiResponse<IEnumerable<TestDto>>> GetAll(CancellationToken cancellationToken)
         {
             var models = await exampleLogic.GetAll(cancellationToken);
             var listModel = models.ToList();// its just a test if u need list pass through in BLL a list
             if (!listModel.Any())
             {
-                return new ApiResponse<IEnumerable<ExampleDto>>(false, ApiResultBodyCode.NotFound, listModel);
+                return new ApiResponse<IEnumerable<TestDto>>(false, ApiResultBodyCode.NotFound, listModel);
             }
-            return new ApiResponse<IEnumerable<ExampleDto>>(true, ApiResultBodyCode.Success, listModel);
+            return new ApiResponse<IEnumerable<TestDto>>(true, ApiResultBodyCode.Success, listModel);
         }
     }
 }
