@@ -11,11 +11,6 @@ public class AuthenticationProfiles : Profile
 {
     public AuthenticationProfiles()
     {
-        //Example Mapping
-        CreateMap<TestDto, Test>()
-            .ForMember(dest => dest.CreatedDate, src => src.Ignore());
-        CreateMap<Test, TestDto>();
-
         // User mappings
         CreateMap<UserCreateDto, User>()
             .ForMember(dest => dest.Id, src => src.Ignore())

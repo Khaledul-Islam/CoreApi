@@ -2,6 +2,7 @@
 using Config.Mapper.Authentication;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using Config.Mapper.Example;
 
 namespace ServiceExtensions.Mapper;
 
@@ -12,6 +13,7 @@ public static class AutoMapperRegistration
         List<Profile> profileList = new()
         {
             new AuthenticationProfiles(),
+            new TestProfiles(),
         };
 
         services.AddAutoMapper(config =>
