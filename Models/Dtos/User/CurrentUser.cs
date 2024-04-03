@@ -2,25 +2,25 @@
 
 namespace Models.Dtos.User;
 
-public record CurrentUser
+public class CurrentUser
 {
-    public int Id { get; init; }
+    public int Id { get; set; }
 
-    public string Username { get; init; } = null!;
+    public string Username { get; set; } = null!;
 
-    public string Firstname { get; init; } = null!;
+    public string Firstname { get; set; } = null!;
 
-    public string Lastname { get; init; } = null!;
+    public string Lastname { get; set; } = null!;
 
-    public string Email { get; init; } = null!;
+    public string Email { get; set; } = null!;
 
-    public DateTime Birthdate { get; init; }
+    public DateTime Birthdate { get; set; }
 
-    public string PhoneNumber { get; init; } = null!;
+    public string PhoneNumber { get; set; } = null!;
 
-    public GenderType Gender { get; init; }
+    public GenderType Gender { get; set; }
 
-    public ICollection<string> Roles { get; init; } = null!;
+    public ICollection<string> Roles { get; set; } = null!;
 
 
 }

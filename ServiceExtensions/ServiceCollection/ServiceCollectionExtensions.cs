@@ -30,6 +30,8 @@ using Contracts.Example;
 using Contracts.Quartz;
 using Utilities.Exceptions;
 using Services.Example;
+using Contracts.ContextAccessor;
+using Utilities.ContextAccessor;
 
 namespace ServiceExtensions.ServiceCollection
 {
@@ -216,7 +218,10 @@ namespace ServiceExtensions.ServiceCollection
                 };
             });
         }
-
+        public static void AddCurrentPrincipleAccessor(this IServiceCollection services)
+        {
+            services.AddScoped<ICurrentPrinciple, CurrentPrinciple>();
+        }
         public static void AddApplicationDependencyRegistration(this IServiceCollection services,
             ApplicationSettings applicationSettings)
         {

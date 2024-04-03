@@ -54,6 +54,7 @@ void ConfigureServices(IServiceCollection serviceCollection)
     serviceCollection.AddSwagger();
 
     serviceCollection.AddHttpContextAccessor();
+    serviceCollection.AddCurrentPrincipleAccessor();
 
     // Add service and create Policy with options
     serviceCollection.AddCors(options =>
