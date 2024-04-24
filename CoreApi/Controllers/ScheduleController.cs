@@ -8,7 +8,7 @@ using Services.Quartz.Job;
 
 namespace CoreApi.Controllers
 {
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class ScheduleController(IJobScheduleService jobScheduleService,
             ILogger<ScheduleController> logger, IScheduler scheduler) : BaseController
     {
